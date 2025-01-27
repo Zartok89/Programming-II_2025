@@ -6,14 +6,8 @@ AInteractActor::AInteractActor()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));  
-    SetRootComponent(DefaultSceneRoot); 
-
-	LampBodyStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Lamp Body"));
-	LampBodyStaticMeshComponent->SetupAttachment(DefaultSceneRoot);
-
-	LampHeadStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Lamp Head"));
-	LampHeadStaticMeshComponent->SetupAttachment(DefaultSceneRoot);
+	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
+	SetRootComponent(DefaultSceneRoot);
 }
 
 // Called when the game starts or when spawned
@@ -30,5 +24,28 @@ void AInteractActor::Tick(float DeltaTime)
 
 void AInteractActor::OnInteract()
 {
+	FlipFlopInteractToggle();
 	UE_LOG(LogTemp, Error, TEXT("INTERACTED!!"));
+}
+
+void AInteractActor::FlipFlopInteractToggle()
+{
+	bIsStateA = !bIsStateA;
+
+	if (bIsStateA)
+	{
+		FlipFlopStateA();
+	}
+	else
+	{
+		FlipFlopStateB();
+	}
+}
+
+void AInteractActor::FlipFlopStateA()
+{
+}
+
+void AInteractActor::FlipFlopStateB()
+{
 }

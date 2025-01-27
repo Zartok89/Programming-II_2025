@@ -24,16 +24,15 @@ void ACPPCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) 
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ACPPCharacter::InteractingWithOneObject);
+		//EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ACPPCharacter::InteractingWithOneObject);
 	}
 }
 
-void ACPPCharacter::InteractingWithOneObject()
+void ACPPCharacter::InteractingWithOneObject(float InInteractRadius)
 {
 	FHitResult HitResult;
-	float SphereRadius = 200.f;
 
 	bool bHit = GetWorld()->SweepSingleByChannel(
 		HitResult,
@@ -41,7 +40,7 @@ void ACPPCharacter::InteractingWithOneObject()
 		GetActorLocation(),
 		FQuat::Identity,
 		ECC_Visibility,
-		FCollisionShape::MakeSphere(SphereRadius),
+		FCollisionShape::MakeSphere(InInteractRadius),
 		FCollisionQueryParams(FName(TEXT("InteractTrace")), false, this)
 	);
 
@@ -49,7 +48,7 @@ void ACPPCharacter::InteractingWithOneObject()
 		GetWorld(),
 		GetActorLocation(),
 		GetActorLocation(),
-		SphereRadius,
+		InInteractRadius,
 		EDrawDebugTrace::ForDuration,
 		false,
 		HitResult,
@@ -70,6 +69,54 @@ void ACPPCharacter::InteractingWithOneObject()
 				if (InterfaceInstance)
 				{
 					InterfaceInstance->OnInteract();
+				}
+			}
+		}
+	}
+}
+
+void ACPPCharacter::InteractingWithManyObjects(float InInteractRadius)
+{
+	TArray<FHitResult> HitResults;
+
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		GetActorLocation(),
+		GetActorLocation(),
+		FQuat::Identity,
+		ECC_Visibility,
+		FCollisionShape::MakeSphere(InInteractRadius),
+		FCollisionQueryParams(FName(TEXT("InteractTrace")), false, this)
+	);
+
+	DrawDebugSphereTraceMulti(
+		GetWorld(),
+		GetActorLocation(),
+		GetActorLocation(),
+		InInteractRadius,
+		EDrawDebugTrace::ForDuration,
+		false,
+		HitResults,
+		FLinearColor::Green,
+		FLinearColor::Red,
+		5.f
+	);
+
+	if (bHit)
+	{
+		for (auto& ActorsHit : HitResults)
+		{
+			TObjectPtr<AInteractActor> OtherActor = Cast<AInteractActor>(ActorsHit.GetActor());
+
+			if (OtherActor)
+			{
+				if (OtherActor->GetClass()->ImplementsInterface(UCPPInteractInterface::StaticClass()))
+				{
+					ICPPInteractInterface* InterfaceInstance = Cast<ICPPInteractInterface>(OtherActor);
+					if (InterfaceInstance)
+					{
+						InterfaceInstance->OnInteract();
+					}
 				}
 			}
 		}

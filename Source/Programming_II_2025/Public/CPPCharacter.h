@@ -25,5 +25,12 @@ public:
 	TObjectPtr<UInputAction> InteractAction;
 
 	UFUNCTION(BlueprintCallable)
-	void InteractingWithOneObject();
+	//void InteractingWithOneObject();
+	void InteractingWithOneObject(float InInteractRadius);
+
+	UFUNCTION(BlueprintCallable)
+	void InteractingWithManyObjects(float InInteractRadius);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ApplesPickedUp;
 };

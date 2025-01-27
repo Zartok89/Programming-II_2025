@@ -11,26 +11,32 @@ class PROGRAMMING_II_2025_API AInteractActor : public AActor, public ICPPInterac
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	AInteractActor();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnInteract() override;
 
+	UFUNCTION(BlueprintCallable)
+	void FlipFlopInteractToggle();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void FlipFlopStateA();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void FlipFlopStateB();
+
+	UPROPERTY()
+	bool bIsStateA;
+
+	UPROPERTY()
+	bool bIsStateB;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* DefaultSceneRoot;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UStaticMeshComponent* LampBodyStaticMeshComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UStaticMeshComponent* LampHeadStaticMeshComponent;
 };
